@@ -5,6 +5,7 @@ This is a MERN stack boilerplate that uses MongoDB, Express, React, and Node.js.
 ## Table of Contents
 - [Dependencies](#dependencies)
 - [Downloading and Using](#downloading-and-using)
+- [File Structure](#file-structure)
 - [Scripts](#scripts)
 
 ## Dependencies
@@ -52,6 +53,32 @@ To download and use this boilerplate:
 4. Run `npm run build` to build the project for production using webpack. This command will bundle all the JavaScript, CSS, and other assets and create a `dist` folder in your project directory.
 5. Run `npm run start` to start the server using nodemon and the bundled files in the `dist` folder. The `start` script uses nodemon to monitor changes to your server files and restarts the server automatically when changes are detected. Alternatively, you can use `npm run dev` to start the webpack dev server and the server using concurrently.
 
+## File Structure
+This boilerplate has the following file structure:
+```
+├── client
+│   ├── components
+│   │   └── App.jsx
+│   ├── dist
+│   │   ├── bundle.js
+│   │   ├── bundle.js.LICENSE.txt
+│   │   └── index.html
+│   ├── index.html
+│   ├── index.js
+│   └── styling
+│       ├── _styles.scss
+│       ├── _variables.scss
+│       └── application.scss
+├── package-lock.json
+├── package.json
+├── server
+│   ├── controllers
+│   ├── models
+│   ├── routes
+│   │   └── api.js
+│   └── server.js
+└── webpack.config.js
+```
 
 ## Scripts
 This boilerplate provides the following scripts:
