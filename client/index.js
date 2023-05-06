@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './components/App.jsx';
 
 // IMPORT MAIN SCSS FILE
-import './styling/application.scss';
+import './stylesheets/application.scss';
 
 // RENDER APP
 ReactDOM.render(

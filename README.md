@@ -6,20 +6,20 @@ CURRENTLY NOT WORKING, PLEASE USE [Vite Boilerplate](https://github.com/leesamue
 This is a MERN stack boilerplate that uses MongoDB, Express, React, and Node.js. This repository provides a starting point for building full-stack web applications using the MERN stack.
 
 ## Table of Contents
-- [Downloading and Using](#downloading-and-using)
+- [How to Use](#how-to-use)
 - [Dependencies](#dependencies)
 - [File Structure](#file-structure)
 - [Scripts](#scripts)
 
-## Downloading and Using
+## How to Use
 To download and use this boilerplate:
 
 1. Clone this repository to your local machine.
 2. Navigate to the project directory in your terminal and run `npm install` to install the required dependencies.
 3. Edit the `.env` file in the root directory of the project and add any necessary environment variables (if you are using MONGODB)
-4. Run `npm run build` to build the project for production using webpack. This command will bundle all the JavaScript, CSS, and other assets and create a `dist` folder in your project directory.
-5. Run `npm start` to start the server using nodemon and the bundled files in the `dist` folder. The `start` script uses nodemon to monitor changes to your server files and restarts the server automatically when changes are detected. Alternatively, you can use `npm run dev` to start the webpack dev server and the server using concurrently.
-6. Port will open on localhost:8087 (you can change this in the `server.js` file)
+4. Run ⭐ 'npm run dev' ⭐ to start the webpack-dev-server and the backend server concurrently. This command will start the webpack-dev-server with hot reloading enabled and it will start your backend server as well.
+5. The frontend application will be served at `localhost:3033` and the backend server will be running on port 3040 (you can change this in the `webpack.config.js` and `server.js` file)
+
 
 ## Dependencies
 This boilerplate uses the following dependencies:
@@ -59,6 +59,8 @@ This boilerplate uses the following dependencies:
 ## File Structure
 This boilerplate has the following file structure:
 ```
+├── LICENSE
+├── README.md
 ├── client
 │   ├── components
 │   │   └── App.jsx
@@ -68,15 +70,13 @@ This boilerplate has the following file structure:
 │   │   └── index.html
 │   ├── index.html
 │   ├── index.js
-│   └── styling
+│   └── stylesheets
 │       ├── _styles.scss
 │       ├── _variables.scss
 │       └── application.scss
 ├── package-lock.json
 ├── package.json
 ├── server
-│   ├── controllers
-│   ├── models
 │   ├── routes
 │   │   └── api.js
 │   └── server.js
@@ -86,9 +86,9 @@ This boilerplate has the following file structure:
 ## Scripts
 This boilerplate provides the following scripts:
 
-- `start`: Starts the server using nodemon and the `server.js` file. This script is used for starting the application in development mode.
-- `build`: Builds the project for production using webpack. This script is used for building the project for production.
-- `dev`: Starts the webpack dev server and the server using concurrently. This script is used for starting the application in development mode with live reloading.
+- `start`: Starts the server using nodemon and the `server.js` file. This script is used for starting the application in production mode after building the frontend.
+- `dev`: Starts the webpack dev server and the backend server concurrently. This script is used for starting the application in development mode with live reloading. The frontend will be served at `localhost:3000`, and the backend server will be running on port 3040.
+- `build`: Builds the project for production using webpack. This script is used for building the project for production. It will bundle all the JavaScript, CSS, and other assets and create a `dist` folder in your project directory.
 
 To run these scripts, use the command `npm run [script]` in your terminal.
 

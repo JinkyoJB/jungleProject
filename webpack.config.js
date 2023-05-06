@@ -1,11 +1,14 @@
 const path = require('path');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
-
 module.exports = {
+  mode: process.env.NODE_ENV || 'production',
   entry: './client/index.js',
   output: {
     path: path.join(__dirname, 'client/dist'),
     filename: 'bundle.js',
+  },
+  resolve: {
+    extensions: ['.js', '.jsx'],
   },
   module: {
     rules: [
@@ -17,7 +20,7 @@ module.exports = {
         },
       },
       {
-        test: /\.(css|scss)$/,
+        test: /\.scss$/,
         use: [
           'style-loader',
           'css-loader',
@@ -38,9 +41,9 @@ module.exports = {
     }),
   ],
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    static: path.join(__dirname, 'client/dist'),
     compress: true,
-    port: 3000,
+    port: 3033,
     open: true,
     historyApiFallback: true,
   },

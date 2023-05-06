@@ -3,7 +3,7 @@ const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const PORT = 8087 || process.env.PORT;
+const PORT = 3000;
 const app = express();
 
 // PARSE ALL REQUESTS
@@ -40,7 +40,7 @@ app.use((err, req, res) => {
 
 
 
-// // MONGODB CONNECTION
+// MONGODB CONNECTION
 // mongoose.connect('process,env.MONGO_URI', {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true
