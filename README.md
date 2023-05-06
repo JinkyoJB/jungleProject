@@ -1,8 +1,4 @@
 # MERN Boilerplate
-
-CURRENTLY NOT WORKING, PLEASE USE [Vite Boilerplate](https://github.com/leesamuel423/vite-boilerplate) IN THE MEANTIME
-
-
 This is a MERN stack boilerplate that uses MongoDB, Express, React, and Node.js. This repository provides a starting point for building full-stack web applications using the MERN stack.
 
 ## Table of Contents
