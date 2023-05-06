@@ -3,10 +3,20 @@
 This is a MERN stack boilerplate that uses MongoDB, Express, React, and Node.js. This repository provides a starting point for building full-stack web applications using the MERN stack.
 
 ## Table of Contents
-- [Dependencies](#dependencies)
 - [Downloading and Using](#downloading-and-using)
+- [Dependencies](#dependencies)
 - [File Structure](#file-structure)
 - [Scripts](#scripts)
+
+## Downloading and Using
+To download and use this boilerplate:
+
+1. Clone this repository to your local machine.
+2. Navigate to the project directory in your terminal and run `npm install` to install the required dependencies.
+3. Edit the `.env` file in the root directory of the project and add any necessary environment variables (if you are using MONGODB)
+4. Run `npm run build` to build the project for production using webpack. This command will bundle all the JavaScript, CSS, and other assets and create a `dist` folder in your project directory.
+5. Run `npm start` to start the server using nodemon and the bundled files in the `dist` folder. The `start` script uses nodemon to monitor changes to your server files and restarts the server automatically when changes are detected. Alternatively, you can use `npm run dev` to start the webpack dev server and the server using concurrently.
+6. Port will open on localhost:8087 (you can change this in the `server.js` file)
 
 ## Dependencies
 This boilerplate uses the following dependencies:
@@ -42,16 +52,6 @@ This boilerplate uses the following dependencies:
 - `webpack`: module bundler for JavaScript
 - `webpack-cli`: command-line interface for webpack
 - `webpack-dev-server`: development server that provides live reloading and other features for webpack
-
-
-## Downloading and Using
-To download and use this boilerplate:
-
-1. Clone this repository to your local machine.
-2. Navigate to the project directory in your terminal and run `npm install` to install the required dependencies.
-3. Edit the `.env` file in the root directory of the project and add any necessary environment variables.
-4. Run `npm run build` to build the project for production using webpack. This command will bundle all the JavaScript, CSS, and other assets and create a `dist` folder in your project directory.
-5. Run `npm run start` to start the server using nodemon and the bundled files in the `dist` folder. The `start` script uses nodemon to monitor changes to your server files and restarts the server automatically when changes are detected. Alternatively, you can use `npm run dev` to start the webpack dev server and the server using concurrently.
 
 ## File Structure
 This boilerplate has the following file structure:

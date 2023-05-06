@@ -3,7 +3,7 @@ const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const PORT = 8087;
+const PORT = 8087 || process.env.PORT;
 const app = express();
 
 // PARSE ALL REQUESTS
