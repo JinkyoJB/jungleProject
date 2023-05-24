@@ -27,7 +27,7 @@ app.get('*', (req, res) => {
 app.use((req, res) => res.status(404).send('404 Not Found'));
 
 // GLOBAL ERROR HANDLER
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   const defaultErr = {
     log: 'Express error handler caught unknown middleware error',
     status: 400,
