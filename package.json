@@ -12,6 +12,7 @@
   "author": "Samuel Lee",
   "license": "ISC",
   "dependencies": {
+    "@react-three/drei": "^9.70.1",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
