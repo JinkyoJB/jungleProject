@@ -3,86 +3,25 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import {OrbitControls} from '@react-three/drei';  
 import { TextureLoader } from 'three';
-
-const Box = ({ handleClick }) => {
-  const ref = useRef();
-  useFrame(state => {
-    ref.current.rotation.x += 0.001;
-    ref.current.rotation.y += 0.001;
-  });
-
-  const texture = new TextureLoader().load(quaka);
-
-  return (
-    <mesh ref={ref} onClick={handleClick}>
-      <boxBufferGeometry />
-      <meshBasicMaterial map={texture} />
-    </mesh>
-  );
-};
+import * as THREE from 'three';
 
 const App = () => {
-  const [showLogin, setShowLogin] = useState(false);
-  const loginRef = useRef();
+    // 장면
+    const scene = new THREE.Scene();
 
-  const handleClickBox = () => {
-    setShowLogin(true);
-  };
+    // 카메라
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/ window.innerHeight, 0.1, 1000);
 
-  const handleCloseLogin = () => {
-    setShowLogin(false);
-  };
+    // 렌더러 
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    renderer.render(scene, camera);
 
-  useEffect(() => {
-    if (showLogin) {
-      loginRef.current.focus();
-    }
-  }, [showLogin]);
-
-  return (
-    <div style={{ height: '100vh', width: '100wh' }}>
-      <Canvas>
-        <OrbitControls/>
-        <ambientLight intensity={0.1} />
-        <directionalLight position={[0, 0, 2]} />
-        <Box handleClick={handleClickBox} />
-      </Canvas>
-
-      {showLogin && (
-        <div className="login-modal" style={styles.loginModal}>
-          <div className="login-content" style={styles.loginContent} ref={loginRef} tabIndex={-1}>
-            {/* Your login form or content goes here */}
-            <h2>Login</h2>
-            <form>
-              {/* Login form fields */}
-              <button onClick={handleCloseLogin}>Close</button>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+    return (
+      
+    )
 };
 
-const styles = {
-  loginModal: {
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    background: 'rgba(0, 0, 0, 0.5)',
-    width: '400px',
-    padding: '20px',
-    borderRadius: '4px',
-    zIndex: '9999',
-  },
-  loginContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#fff',
-  },
-};
 
 export default App;
