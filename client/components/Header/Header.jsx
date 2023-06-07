@@ -6,11 +6,10 @@ const Header = () => {
     return (
     <div className='header'>
         <nav>
-            <span>Get the App</span>
+            <span>Logo</span>
             <div className='right'>
                 <span>Investor Relations</span>
                 <span>Add restaurant</span>
-                <span>Log in</span>
                 <sapn>Sign in</sapn>
             </div>
         </nav>

@@ -2,7 +2,7 @@ import React from "react";
 import "./Login.scss";
 
 function Login() {
-    ruturn (
+    return (
         <div className="login">
             <form>
                 <h1>Sign in</h1>
@@ -10,22 +10,7 @@ function Login() {
             
             
             </form> 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         </div>
     )
 }
+export default Login;
