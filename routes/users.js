@@ -9,71 +9,206 @@ const async =  require('async');
 const nodemailer = require('nodemailer');
 
 // checks if user is authenticated
-function isAuthenticatedUser(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next(); // 다음 middleware
-    }
+// function isAuthenticatedUser(req, res, next) {
+//     if (req.isAuthenticated()) {
+//         return next(); // 다음 middleware
+//     }
 
-    req.flash('error_msg', 'Please Login first to access this page');
-    res.redirect('/login');
-}
+//     req.flash('error_msg', 'Please Login first to access this page');
+//     res.redirect('/login');
+// }
 
 // Get routes 
-router.get('/login', (req, res) => {
-    res.render('login');
-});
+// router.get('/login', (req, res) => {
+//     res.render('login');
+// });
 
-router.get('/signup', (req, res) => {
-    res.render('signup');
-});
+// router.get('/signup', (req, res) => {
+//     res.render('signup');
+// });
 
-router.get('/dashboard', isAuthenticatedUser, (req, res) => {
-    res.render('dashboard');
-});
+// router.get('/dashboard', isAuthenticatedUser, (req, res) => {
+//     res.render('dashboard');
+// });
 
-router.get('/logout', isAuthenticatedUser, (req, res, next) => {
+/**
+ * @swagger
+ * /logout:
+ *   get:
+ *     tags:
+ *      - user 
+ *     summary: Log out the current user
+ *     description: This endpoint logs out the current user and return a status message
+ *     responses:
+ *       200:
+ *         description: The user has been successfully logged out
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "logged out"
+ *       500:
+ *         description: There was an error logging out the user
+ */
+router.get('/logout', (req, res, next) => {
     req.logOut(function(err) {
         if (err) {
             return next(err); 
         }
         req.flash('success_msg', 'You have been logged out');
-        res.redirect('/login');
+        // res.redirect('/login');
+        res.status(200).json({'message': 'logged out'});
     });
 });
 
-router.get('/forgot', (req, res) => {
-    res.render('forgot');
-});
+// router.get('/forgot', (req, res) => {
+//     res.render('forgot');
+// });
 
+/**
+ * @swagger
+ * /reset/{token}:
+ *   get:
+ *     tags:
+ *      - user
+ *     summary: Reset user's password with provided token
+ *     description: This endpoint validates the password reset token and sends a file for resetting the password
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The password reset token
+ *     responses:
+ *       200:
+ *         description: Sends a file for resetting the password
+ *         content: 
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       400:
+ *         description: The password reset token is invalid or expired
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Password reset token is invalid or expired"
+ *       500:
+ *         description: There was an error processing the reset token
+ */
 router.get('/reset/:token', (req, res) => {
     User.findOne({
         resetPasswordToken  : req.params.token,
-         resetPasswordExpires : {$gt : Date.now()}
+        resetPasswordExpires : {$gt : Date.now()}
     }).then(user => {
         if (!user) {
             req.flash('error_msg', 'Password reset token is invalid or has been expired');
-            res.redirect('/forgot');
+            // res.redirect('/forgot');
+            res.status(400).json({'message': 'Password reset token is invalid or expired'});
         }
 
-        res.render('newpassword', {token : req.params.token});
+        // res.render('newpassword', {token : req.params.token});
+        res.sendFile('newpassword', {token : req.params.token});
     })
     .catch(err => {
         req.flash('error_msg', 'ERROR: ' +err);
-        res.redirect('/forgot');
+        res.status(400).json({'message': 'Password reset token is invalid or expired'});
+        // res.redirect('/forgot');
     });
 })
 
-router.get('/password/change', isAuthenticatedUser,(req, res) => {
-    res.render('changepassword');
-})
+// router.get('/password/change', isAuthenticatedUser,(req, res) => {
+//     res.render('changepassword');
+// })
 
 // Post routes
+
+/**
+ * @swagger
+ * paths:
+ *  /login:
+ *   post:
+ *    tags:
+ *    - user
+ *    description: 로그인
+ *    parameters:
+ *    - in: body
+ *      name: body
+ *      required: true
+ *      schema:
+ *       properties:
+ *        email:
+ *         type: string    
+ *        password:
+ *         type: string
+ *
+ *    responses:
+ *     200:
+ *      description: 로그인 성공
+ *      schema:
+ *       properties:
+ *        message:
+ *         type: string
+ *     400:
+ *      description: 로그인 실패
+ *      schema:
+ *       properties:
+ *        message:
+ *         type: string
+ *
+ */
 router.post('/login', passport.authenticate('local', {
     successRedirect : '/dashboard',
     failureRedirect : '/login',
     failureFlash : 'Invalid email or password. Try Again!'
 }));
 
+/**
+ * @swagger
+ * paths:
+ *  /signup:
+ *   post:
+ *    tags:
+ *    - user
+ *    description: 회원가입
+ *    parameters:
+ *    - in: body
+ *      name: body
+ *      required: true
+ *      schema:
+ *       properties:
+ *        name:
+ *         type: string
+ *        email:
+ *         type: string    
+ *        password:
+ *         type: string
+ *
+ *    responses:
+ *     200:
+ *      description: 회원가입 성공
+ *      schema:
+ *       properties:
+ *        message:
+ *         type: string
+ *     400:
+ *      description: 회원가입 실패
+ *      schema:
+ *       properties:
+ *        message:
+ *         type: string
+ *
+ */
 router.post('/signup', (req, res) => {
     let {name, email, password} = req.body;
 
@@ -86,21 +221,59 @@ router.post('/signup', (req, res) => {
     User.register(userData, password, (err, user) => {
         if(err) {
             req.flash('error_msg', 'ERROR :' + err);
-            res.redirect('/signup');
+            res.status(400).json({'message': err});
+            // res.redirect('/signup');
         }
 
         passport.authenticate('local') (req, res, () => {
             req.flash('success_msg', 'Account created succesfully');
-            res.redirect('/login');
+            res.status(200).json({'message': 'Account created succesfully'});
+
+            // res.redirect('/login');
         })
     });
 })
 
-
+/**
+ * @swagger
+ * paths:
+ *  /password/change:
+ *   post:
+ *    tags:
+ *    - user
+ *    description: 비밀번호 변경
+ *    parameters:
+ *    - in: body
+ *      name: body
+ *      required: true
+ *      schema:
+ *       properties:
+ *        password:
+ *         type: string
+ *        confirmpassword:
+ *         type: string 
+ *
+ *    responses:
+ *     200:
+ *      description: 비밀번호 변경
+ *      schema:
+ *       properties:
+ *        message:
+ *         type: string
+ *     400:
+ *      description: 비밀번호 변경 실패
+ *      schema:
+ *       properties:
+ *        message:
+ *         type: string
+ *
+ */
 router.post('/password/change', (req, res) => {
     if (req.body.password !== req.body.confirmpassword) {
-        req.flash('error_msg', "Password don't match");
-        return res.redirect('/password/change');
+        // req.flash('error_msg', "Password don't match");
+        res.status(400).json({'message': "Password don't match"});
+
+        // return res.redirect('/password/change');
     }
 
     User.findOne({
@@ -111,16 +284,51 @@ router.post('/password/change', (req, res) => {
             user.save()
             .then(user => {
                 req.flash('error_msg', 'Password changed successfully');
-                res.redirect('/dashboard');
+                // res.redirect('/dashboard');
+                res.status(200).json({'message': "Password changed successfully"});
             })
             .catch(err => {
-                req.flash('error_msg', 'ERROR: ' + err);
-                res.redirect('/password/change');
+                // req.flash('error_msg', 'ERROR: ' + err);
+                res.status(400).json({'message': 'ERROR: ' + err});
+
+                // res.redirect('/password/change');
             })
         })
     })
 })
 
+/**
+ * @swagger
+ * paths:
+ *  /forgot:
+ *   post:
+ *    tags:
+ *    - user
+ *    description: 비밀번호 찾기 이메일 전송
+ *    parameters:
+ *    - in: body
+ *      name: body
+ *      required: true
+ *      schema:
+ *       properties:
+ *        email:
+ *         type: string
+ *
+ *    responses:
+ *     200:
+ *      description: 메일 전송 성공 
+ *      schema:
+ *       properties:
+ *        message:
+ *         type: string
+ *     400:
+ *      description: 메일 전송 실패
+ *      schema:
+ *       properties:
+ *        message:
+ *         type: string
+ *
+ */
 // Routes to handle forgot password
 router.post('/forgot', (req, res, next) => {
     let recoveryPassword = '';
@@ -135,8 +343,10 @@ router.post('/forgot', (req, res, next) => {
             User.findOne({email : req.body.email}) // search user
                 .then(user => {
                     if (!user) {
-                        req.flash('error_msg', 'User does not exists with this email');
-                        return res.redirect('/forgot');
+                        // req.flash('error_msg', 'User does not exists with this email');
+                        res.status(400).json({'message': 'ERROR: ' + err});
+                        return 
+                        // return res.redirect('/forgot');
                     }
 
                     // 유저가 존재할 시 토큰 생성
@@ -150,7 +360,9 @@ router.post('/forgot', (req, res, next) => {
                 })
                 .catch(err => {
                     req.flash('error_msg', 'ERROR: ' + err);
-                    res.redirect('/forgot');
+                    res.status(400).json({'message': 'ERROR: ' + err});
+
+                    // res.redirect('/forgot');
                 })
         },
         (token, user) => { /* 6/5problem: cannot send email via google because app password cannot be applied...  */
@@ -172,15 +384,67 @@ router.post('/forgot', (req, res, next) => {
             };
             smtpTransport.sendMail(mailOptions, err=> {
                 req.flash('success_msg', 'Email send with further instructions. Please check that.');
-                res.redirect('/forgot');
+                res.status(200).json({'message': 'Email send with further instructions. Please check that.'});
+
+                // res.redirect('/forgot');
             });
         }
 
     ], err => {
-        if (err) res.redirect('/forgot');
+        // if (err) res.redirect('/forgot');
+        if (err) res.status(400).json({'message': 'cannot send email'});
+
     })
 } );
 
+/**
+ * @swagger
+ * paths:
+ *  /reset/{token}:
+ *   post:
+ *     summary: Resets user password
+ *     description: This endpoint allows for the resetting of a user's password, given a valid password reset token.
+ *     tags:
+ *       - user
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The password reset token.
+ *       - in: body
+ *         name: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             password:
+ *               type: string
+ *             confirmpassword:
+ *               type: string
+ *     responses:
+ *       200:
+ *         description: Password has been successfully reset.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Your password has been changed successfully"
+ *       400:
+ *         description: Error in resetting password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Password reset token is invalid or has been expired"
+ */
 router.post('/reset/:token', (req, res) => {
     async.waterfall([
         (done) => {
@@ -190,12 +454,16 @@ router.post('/reset/:token', (req, res) => {
                 .then(user => {
                     if (!user) {
                         req.flash('error_msg', 'Password reset token is invalid or has been expired');
-                        res.redirect('/forgot');
+                        res.status(400).json({'message': 'Password reset token is invalid or has been expired'});
+
+                        // res.redirect('/forgot');
                     }
                     
                     if (req.body.password !== req.body.confirmpassword) {
                         req.flash('error_msg', "Password don't match");
-                        return res.redirect('/forgot');
+                        res.status(400).json({'message': "Password don't match"});
+
+                        // return res.redirect('/forgot');
                     }
 
                     user.setPassword(req.body.password, err => {
@@ -212,7 +480,9 @@ router.post('/reset/:token', (req, res) => {
                 })
                 .catch(err => {
                     req.flash('error_msg', 'ERROR: ' + err);
-                    res.redirect('/forgot');
+                    res.status(400).json({'message': 'ERROR: ' + err});
+
+                    // res.redirect('/forgot');
                 })
         },
 
@@ -235,12 +505,15 @@ router.post('/reset/:token', (req, res) => {
 
             smtpTransport.sendMail(mailOptions, err => {
                 req.flash('success_msg', 'Your password has been changed successfully');
-                res.redirect('/login');
+                res.status(200).json({'message': 'Your password has been changed successfully'});
+                // res.redirect('/login');
             })
         }
 
     ],err => {
-        res.redirect('/login');
+        // res.redirect('/login');
+        res.status(400).json({'message': 'reset failed'});
+
     })
 })
 

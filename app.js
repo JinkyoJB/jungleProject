@@ -13,6 +13,13 @@ const LocalStrategy = require('passport-local').Strategy;
     facebook strategy 같은것도 있다고 함
 */
 
+/* ---------------- swagger 사용 설정 -------------------- */
+const { swaggerUi, specs } = require('./modules/swagger');
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+/* ---------------- swagger 사용 설정 -------------------- */
+
+
 // Requiring user route
 const userRoutes = require('./routes/users');
 
