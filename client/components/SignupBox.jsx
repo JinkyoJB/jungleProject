@@ -22,10 +22,20 @@ const SignupBox = () => {
       email: data.get('email'),
       password: data.get('password'),
     });
-    axios.post('http://localhost:3000/signup', {
-      name: data.get('name'),
-      email: data.get('email'),
-      password: data.get('password')
+    const name = data.get('name');
+    const email = data.get('email');
+    const password = data.get('password');
+    // axios.post('http://localhost:3000/signup', {
+    //   name: data.get('name'),
+    //   email: data.get('email'),
+    //   password: data.get('password')
+    // }).catch((err) => console.log(err));
+    fetch('http://localhost:3000/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type' : 'application/json',
+      },
+      body: JSON.stringify({name, email, password}),
     }).catch((err) => console.log(err));
   };
 
