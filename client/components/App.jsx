@@ -1,4 +1,6 @@
 import React from 'react';
+
+/*--------------------- dohee 추가 : 클라우드 이미지 url ------------------------*/
 import axios from 'axios';
 
 // DEFINE APP AS FUNCTIONAL COMPONENT AND RENDER
@@ -23,6 +25,7 @@ const App = () => { // 리액트 컴포넌트 App 정의
       console.error('Failed to upload image:', error);
     }
   };
+/*-------------------------------------------------------------------*/
 
   return (
     <div className="app">
