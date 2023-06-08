@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components'
-
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -14,6 +15,21 @@ import axios from 'axios';
 
 
 const LoginBox = () => {
+  const [errorMessage, setErrorMessage] = useState(null); // Error message state
+  const navigate = useNavigate(); // useNavigate hook for redirecting 
+  const handleResponse = async () => {
+      const response = await axios.post('http://localhost:3004/login');
+      const status = response.status;
+      // 200이면 로그인 성공 , 400이면 로그인 실패
+      if (status == 200){
+        navigate('/home');
+      }
+      if (status == 400){
+        setErrorMessage('Login failed. Please try again.');
+      }
+    }
+
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -21,10 +37,11 @@ const LoginBox = () => {
           email: data.get("email"),
           password: data.get("password"),
         });
-        axios.post('http://localhost:3000/login', {
+        axios.post('http://localhost:3004/login', {
           email: data.get("email"),
           password: data.get("password")
-        })
+        }).then(handleResponse);
+
       };
     
       return (
@@ -91,6 +108,7 @@ const LoginBox = () => {
               </Grid>
             </Box>
           </Box>
+          {errorMessage && <div>{errorMessage}</div>} {/* Display error message when it exists */}
         </Container>
       );
 };

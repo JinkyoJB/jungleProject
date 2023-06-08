@@ -22,11 +22,11 @@ const SignupBox = () => {
           email: data.get("email"),
           password: data.get("password"),
         });
-        axios.post('http://localhost:3000/signup', {
+        axios.post('http://localhost:3004/signup', {
           name: data.get("name"),
           email: data.get("email"),
           password: data.get("password")
-        })
+        }).catch((err) => console.log(err))
       };
     
       return (
@@ -52,8 +52,8 @@ const SignupBox = () => {
                 required
                 fullWidth
                 id="name"
-                label="Name"
-                name="Name"
+                label="name"
+                name="name"
                 autoComplete="name"
                 autoFocus
               />
