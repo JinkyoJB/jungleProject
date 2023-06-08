@@ -25,11 +25,12 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 
 // cors
 let corsOptions = {
-  origin: 'http://127.0.0.1:3033',
+  origin: 'http://localhost:3033',
   credentials : true // 요청하는 측과 응답하는 측 모두 인증 정보 처리 가능
 };
 
 app.use(cors(corsOptions));
+// app.use(cors());
 
 // ROUTES
 // const userRoutes = require('./routes/users');

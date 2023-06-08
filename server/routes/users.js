@@ -207,20 +207,27 @@ router.post('/login', passport.authenticate('local', {
  */
 router.post('/signup', (req, res) => {
   let {name, email, password} = req.body;
+  console.log(name, email, password);
 
   let userData = {
     name : name,
     email : email,
   };
+  console.log(userData);
 
   User.register(userData, password, (err, user) => {
     if(err) {
+      const status = 400;
+      console.log(err);
       res.status(400).json({'message': err});
+      console.log(status);
       return;
     }
 
     passport.authenticate('local') (req, res, () => {
+      const status = 200;
       res.status(200).json({'message': 'Account created successfully'});
+      console.log(status);
     });
   });
 });

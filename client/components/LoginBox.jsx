@@ -22,7 +22,7 @@ const LoginBox = () => {
     const status = response.status;
     // 200이면 로그인 성공 , 400이면 로그인 실패
     if (status == 200){
-      navigate('/home');
+      navigate('/Mypage');
     }
     if (status == 400){
       setErrorMessage('Login failed. Please try again.');
@@ -37,7 +37,7 @@ const LoginBox = () => {
       email: data.get('email'),
       password: data.get('password'),
     });
-    axios.post('http://localhost:3004/login', {
+    axios.post('http://localhost:3000/login', {
       email: data.get('email'),
       password: data.get('password')
     }).then(handleResponse);

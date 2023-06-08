@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -11,9 +11,14 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from 'axios';
+import Alert from '@mui/material/Alert';
+
+
 
 
 const SignupBox = () => {
+  const [error, setError] = React.useState(''); // Initialize error state
+  const navigate = useNavigate(); // Create navigate function
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -25,18 +30,41 @@ const SignupBox = () => {
     const name = data.get('name');
     const email = data.get('email');
     const password = data.get('password');
-    // axios.post('http://localhost:3000/signup', {
-    //   name: data.get('name'),
-    //   email: data.get('email'),
-    //   password: data.get('password')
-    // }).catch((err) => console.log(err));
-    fetch('http://localhost:3000/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type' : 'application/json',
-      },
-      body: JSON.stringify({name, email, password}),
-    }).catch((err) => console.log(err));
+    
+    axios.post('http://localhost:3000/signup', {
+      name: data.get('name'),
+      email: data.get('email'),
+      password: data.get('password')
+    })
+    // .catch((err) => console.log(err))
+    .then((response)=> {
+      if(response.status === 200){
+        navigate('/login'); // Navigate to /signin on successful signup
+      }
+      if(response.status === 400){
+        setError('Sign up failed. Please try again.'); // Set error message
+      }
+    })
+    .catch((err) => {console.log(err);
+          setError('An error occured. Please try again')});
+    /* Using Fetch */
+    // fetch('http://localhost:3000/signup', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type' : 'application/json',
+    //   },
+    //   body: JSON.stringify({name, email, password}),
+    // })
+    // .then((response) => {
+    //   if (!response.ok) {
+    //     return response.json().then((data) => {
+    //       throw new Error(`Server error: ${data.error}`);
+    //     });
+    //   }
+    //   return response.json();
+    // })
+    // .catch((err) => console.log(err));
+    
   };
 
   return (
@@ -56,6 +84,7 @@ const SignupBox = () => {
         <Typography component="h1" variant="h5">
               Register
         </Typography>
+        {error && <Alert severity="error">{error}</Alert>}
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
@@ -97,7 +126,7 @@ const SignupBox = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-                Sign In
+                Sign Up
           </Button>
           <Grid container>
             <Grid item xs>
@@ -105,11 +134,6 @@ const SignupBox = () => {
                     Back to login
               </Link>
             </Grid>
-            {/* <Grid item>
-                  <Link href="#" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid> */}
           </Grid>
         </Box>
       </Box>
