@@ -110,7 +110,6 @@ router.get('/reset/:token', (req, res) => {
 
 
 /* ---------------- post routes ------------- */
-
 /**
  * @swagger
  * paths:
