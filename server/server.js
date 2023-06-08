@@ -20,6 +20,12 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 // ROUTES
 app.use('/api', require('./routes/api'));
 
+
+//mypage 사진 test용
+app.get('/api/mypage', function (req,res){
+  res.json({url: 'https://th.bing.com/th/id/OIP.VYhaBxaL4uZcphXTQZPa7QHaKf?w=186&h=263&c=7&r=0&o=5&pid=1.7'});
+});
+
 // MONGODB CONNECTION
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
