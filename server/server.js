@@ -46,7 +46,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 // Requiring user model
 const User = require('./models/usermodel');
 
@@ -54,6 +53,7 @@ dotenv.config({path : './config.env'});
 
 const userRoutes = require('./routes/users');
 app.use(userRoutes);
+
 
 //HANDLE CLIENT-SIDE ROUTING
 app.get('*', (req, res) => {
