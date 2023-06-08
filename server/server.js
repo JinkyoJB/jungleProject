@@ -6,6 +6,9 @@ const cookieParser = require('cookie-parser');
 const PORT = 3000;
 const app = express();
 
+const cors = require('cors');
+app.use(cors());
+
 // PARSE ALL REQUESTS
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -17,28 +20,21 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 // ROUTES
 app.use('/api', require('./routes/api'));
 
-// let id = 2;
-// const todoList = [{
-//   id: 1,
-//   text: '할일 1',
-//   done: false,
-// }];
+// MONGODB CONNECTION
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.log(err));
 
-// app.get('/api/todo', (req, res) => {
-//   res.json(todoList);
-// });
+// SERVER LISTEN
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
+});
 
-// app.post('/api/todo', (req, res) => {
-//   const { text, done } = req.body;
-//   todoList.push({
-//     id: id++,
-//     text,
-//     done,
-//   });
-//   return res.send('success');
-// });
 
-//HANDLE CLIENT-SIDE ROUTING
+// HANDLE CLIENT-SIDE ROUTING
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
@@ -56,18 +52,4 @@ app.use((err, req, res, next) => {
   const errorObj = Object.assign({}, defaultErr, err);
   console.log(errorObj.log);
   return res.status(errorObj.status).json(errorObj.message);
-});
-
-
-// MONGODB CONNECTION
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.log(err));
-
-// SERVER LISTEN
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
 });
