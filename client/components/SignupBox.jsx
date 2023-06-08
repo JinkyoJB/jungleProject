@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-
+import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -11,9 +11,30 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from 'axios';
+import { response } from 'express';
 
 
 const SignupBox = () => {
+  const [errorMessage, setErrorMessage] = useState(null); // Error message state
+  const navigate = useNavigate(); // useNavigate hook for redirecting
+  const handleResponse = async () => {
+    try {
+        const response = await fetch('http://localhost:3000/signup');
+        const status = response.status;
+
+        if (status === 200) {
+            navigate('/login');
+        } else if (status === 400) {
+            setErrorMessage('Sign up failed. Please try again.');
+        } else {
+            // handle other status codes as necessary
+        }
+    } catch (error) {
+        console.error('Failed to fetch', error);
+        setErrorMessage('Something went wrong. Please try again.');
+    }
+};
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -25,18 +46,13 @@ const SignupBox = () => {
     const name = data.get('name');
     const email = data.get('email');
     const password = data.get('password');
-    // axios.post('http://localhost:3000/signup', {
-    //   name: data.get('name'),
-    //   email: data.get('email'),
-    //   password: data.get('password')
-    // }).catch((err) => console.log(err));
     fetch('http://localhost:3000/signup', {
       method: 'POST',
       headers: {
         'Content-Type' : 'application/json',
       },
       body: JSON.stringify({name, email, password}),
-    }).catch((err) => console.log(err));
+    }).then(handleResponse);
   };
 
   return (
@@ -113,6 +129,7 @@ const SignupBox = () => {
           </Grid>
         </Box>
       </Box>
+      {errorMessage && <div>{errorMessage}</div>} {/* Display error message when it exists */}
     </Container>
   );
 };

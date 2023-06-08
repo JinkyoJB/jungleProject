@@ -18,16 +18,22 @@ const LoginBox = () => {
   const [errorMessage, setErrorMessage] = useState(null); // Error message state
   const navigate = useNavigate(); // useNavigate hook for redirecting
   const handleResponse = async () => {
-    const response = await axios.post('http://localhost:3000/login');
-    const status = response.status;
-    // 200이면 로그인 성공 , 400이면 로그인 실패
-    if (status == 200){
-      navigate('/home');
+    try {
+        const response = await fetch('http://localhost:3000/login');
+        const status = response.status;
+
+        if (status === 200) {
+            navigate('/home');
+        } else if (status === 400) {
+            setErrorMessage('Login failed. Please try again.');
+        } else {
+            // handle other status codes as necessary
+        }
+    } catch (error) {
+        console.error('Failed to fetch', error);
+        setErrorMessage('Something went wrong. Please try again.');
     }
-    if (status == 400){
-      setErrorMessage('Login failed. Please try again.');
-    }
-  };
+};
 
 
   const handleSubmit = (event) => {
@@ -37,9 +43,15 @@ const LoginBox = () => {
       email: data.get('email'),
       password: data.get('password'),
     });
-    axios.post('http://localhost:3004/login', {
-      email: data.get('email'),
-      password: data.get('password')
+    // const name = data.get('name');
+    const email = data.get('email');
+    const password = data.get('password');
+    fetch('http://localhost:3000/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type' : 'application/json',
+      },
+      body: JSON.stringify({email, password}),
     }).then(handleResponse);
 
   };
