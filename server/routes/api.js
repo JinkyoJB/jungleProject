@@ -3,6 +3,21 @@ const router = express.Router();
 
 
 /*--------------------- dohee 추가 : 클라우드 이미지 url ------------------------*/
+const path = require('path');
+// 이미지 업로드 및 URL 저장에 필요한 모듈 임포트 (npm install @google-cloud/storage)
+const { Storage } = require('@google-cloud/storage');
+// 객체 분해 할당 : 모듈에서 필요한 속성만 추출해서 할당. 이렇게 하면 해당 모듈의 storage 클래스를 직접 참조 가능!
+//클라이언트가 이미지를 업로드하면 --> 해당 이미지를 클라우드 스토리지에 저장 --> 업로드 완료 후 생성된 url을 몽고db에 저장
+
+const Image = require('../models/image'); // 이미지 모델 정의
+
+// 구글 클라우드 스토리지 클라이언트 생성 및 인증 정보 설정
+// : Storage를 한 번만 생성해서 해당 인스턴스를 계속 사용하며 연결 상태를 유지. (업로드, 다운로드, 삭제 등 작업 수행)
+const storage = new Storage({
+  keyFilename: path.join(__dirname, 'rich-wavelet-388908-dad58487deb3.json'), // 서비스 계정 키 파일 경로 설정
+  projectId: 'rich-wavelet-388908', // 구글 클라우드 프로젝트 ID
+});
+
 // 이미지 업로드 및 URL 저장 라우트 핸들러(npm install express-fileupload)
 router.post('/upload', (req, res) => {
     // 클라이언트로부터 이미지 파일 받기
