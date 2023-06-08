@@ -8,6 +8,7 @@ const crypto = require('crypto');
 const async = require('async');
 const nodemailer = require('nodemailer');
 
+
 // checks if user is authenticated
 function isAuthenticatedUser(req, res, next) {
   if (req.isAuthenticated()) {
@@ -18,18 +19,6 @@ function isAuthenticatedUser(req, res, next) {
   res.redirect('/login');
 }
 
-// Get routes
-// router.get('/login', (req, res) => {
-//     res.render('login');
-// });
-
-// router.get('/signup', (req, res) => {
-//     res.render('signup');
-// });
-
-// router.get('/dashboard', isAuthenticatedUser, (req, res) => {
-//     res.render('dashboard');
-// });
 
 /**
  * @swagger
@@ -58,15 +47,11 @@ router.get('/logout', isAuthenticatedUser ,(req, res, next) => {
     if (err) {
       return next(err);
     }
-    req.flash('success_msg', 'You have been logged out');
-    // res.redirect('/login');
+
     res.status(200).json({'message': 'logged out'});
   });
 });
 
-// router.get('/forgot', (req, res) => {
-//     res.render('forgot');
-// });
 
 /**
  * @swagger
@@ -112,26 +97,19 @@ router.get('/reset/:token', (req, res) => {
     resetPasswordExpires : {$gt : Date.now()}
   }).then(user => {
     if (!user) {
-      req.flash('error_msg', 'Password reset token is invalid or has been expired');
-      // res.redirect('/forgot');
       res.status(400).json({'message': 'Password reset token is invalid or expired'});
+      return;
     }
 
-    // res.render('newpassword', {token : req.params.token});
     res.sendFile('newpassword', {token : req.params.token});
   })
     .catch(err => {
-      req.flash('error_msg', 'ERROR: ' +err);
       res.status(400).json({'message': 'Password reset token is invalid or expired'});
-      // res.redirect('/forgot');
     });
 });
 
-// router.get('/password/change', isAuthenticatedUser,(req, res) => {
-//     res.render('changepassword');
-// })
 
-// Post routes
+/* ---------------- post routes ------------- */
 
 /**
  * @swagger
@@ -171,7 +149,26 @@ router.post('/login', passport.authenticate('local', {
   successRedirect : '/dashboard',
   failureRedirect : '/login',
   failureFlash : 'Invalid email or password. Try Again!'
-}));
+})
+);
+
+// router.post('/login', function(req, res, next) {
+//   passport.authenticate('local', function(err, user, info) {
+//     if (err) {
+//       return res.status(500).json({ error: err.message });
+//     }
+//     if (!user) {
+//       return res.status(401).json({ error: 'Invalid email or password. Try Again!' });
+//     }
+//     req.logIn(user, function(err) {
+//       if (err) {
+//         return res.status(500).json({ error: err.message });
+//       }
+//       return res.redirect('/dashboard');
+//     });
+//   })(req, res, next);
+// });
+
 
 /**
  * @swagger
@@ -217,19 +214,14 @@ router.post('/signup', (req, res) => {
     email : email,
   };
 
-  /* passport가 자동적으로 password를 encrypt해서 DB에 넣는다고 함. 근데 어떻게?? */
   User.register(userData, password, (err, user) => {
     if(err) {
-      req.flash('error_msg', 'ERROR :' + err);
       res.status(400).json({'message': err});
-      // res.redirect('/signup');
+      return;
     }
 
     passport.authenticate('local') (req, res, () => {
-      req.flash('success_msg', 'Account created successfully');
       res.status(200).json({'message': 'Account created successfully'});
-
-      // res.redirect('/login');
     });
   });
 });
@@ -270,10 +262,8 @@ router.post('/signup', (req, res) => {
  */
 router.post('/password/change', (req, res) => {
   if (req.body.password !== req.body.confirmpassword) {
-    // req.flash('error_msg', "Password don't match");
     res.status(400).json({'message': 'Password don\'t match'});
-
-    // return res.redirect('/password/change');
+    return;
   }
 
   User.findOne({
@@ -283,15 +273,11 @@ router.post('/password/change', (req, res) => {
       user.setPassword(req.body.password, err => {
         user.save()
           .then(user => {
-            req.flash('error_msg', 'Password changed successfully');
-            // res.redirect('/dashboard');
             res.status(200).json({'message': 'Password changed successfully'});
           })
           .catch(err => {
-            // req.flash('error_msg', 'ERROR: ' + err);
             res.status(400).json({'message': 'ERROR: ' + err});
 
-            // res.redirect('/password/change');
           });
       });
     });
@@ -343,29 +329,28 @@ router.post('/forgot', (req, res, next) => {
       User.findOne({email : req.body.email}) // search user
         .then(user => {
           if (!user) {
-            // req.flash('error_msg', 'User does not exists with this email');
-            res.status(400).json({'message': 'ERROR: ' + err});
+            res.status(400).json({'message': 'No user found'});
             return;
-            // return res.redirect('/forgot');
           }
 
-          // 유저가 존재할 시 토큰 생성
+          // If user exists, generate a token
           user.resetPasswordToken = token;
-          user.resetPasswordExpires = Date.now() + 1800000; //  30분(millesecond)
+          user.resetPasswordExpires = Date.now() + 1800000; // 30 minutes in milliseconds
 
-          // 토큰을 DB에 저장
-          user.save(err => {
-            done(err, token, user);
-          });
+          // Save the token in the DB
+          user.save()
+            .then(() => {
+              done(null, token, user);
+            })
+            .catch(err => {
+              done(err);
+            });
         })
         .catch(err => {
-          req.flash('error_msg', 'ERROR: ' + err);
           res.status(400).json({'message': 'ERROR: ' + err});
-
-          // res.redirect('/forgot');
         });
     },
-    (token, user) => { /* 6/5problem: cannot send email via google because app password cannot be applied...  */
+    (token, user) => {
       let smtpTransport = nodemailer.createTransport({
         service: 'Gmail',
         auth : {
@@ -383,15 +368,11 @@ router.post('/forgot', (req, res, next) => {
                         'If you did not request this, please ignore this email.'
       };
       smtpTransport.sendMail(mailOptions, err=> {
-        req.flash('success_msg', 'Email send with further instructions. Please check that.');
         res.status(200).json({'message': 'Email send with further instructions. Please check that.'});
-
-        // res.redirect('/forgot');
       });
     }
 
   ], err => {
-    // if (err) res.redirect('/forgot');
     if (err) res.status(400).json({'message': 'cannot send email'});
 
   });
@@ -453,17 +434,13 @@ router.post('/reset/:token', (req, res) => {
         resetPasswordExpires : {$gt : Date.now()}})
         .then(user => {
           if (!user) {
-            req.flash('error_msg', 'Password reset token is invalid or has been expired');
             res.status(400).json({'message': 'Password reset token is invalid or has been expired'});
-
-            // res.redirect('/forgot');
+            return;
           }
 
           if (req.body.password !== req.body.confirmpassword) {
-            req.flash('error_msg', 'Password don\'t match');
             res.status(400).json({'message': 'Password don\'t match'});
-
-            // return res.redirect('/forgot');
+            return;
           }
 
           user.setPassword(req.body.password, err => {
@@ -479,13 +456,9 @@ router.post('/reset/:token', (req, res) => {
 
         })
         .catch(err => {
-          req.flash('error_msg', 'ERROR: ' + err);
           res.status(400).json({'message': 'ERROR: ' + err});
-
-          // res.redirect('/forgot');
         });
     },
-
     (user) => {
       let smtpTransport = nodemailer.createTransport({
         service : 'Gmail',
@@ -504,16 +477,12 @@ router.post('/reset/:token', (req, res) => {
       };
 
       smtpTransport.sendMail(mailOptions, err => {
-        req.flash('success_msg', 'Your password has been changed successfully');
         res.status(200).json({'message': 'Your password has been changed successfully'});
-        // res.redirect('/login');
       });
     }
 
   ],err => {
-    // res.redirect('/login');
     res.status(400).json({'message': 'reset failed'});
-
   });
 });
 

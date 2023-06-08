@@ -34,16 +34,7 @@ app.use(cors(corsOptions));
 // ROUTES
 // const userRoutes = require('./routes/users');
 app.use('/api', require('./routes/api'));
-
-// Requiring user model
-const User = require('./models/usermodel');
-
-dotenv.config({path : './config.env'});
-
-//HANDLE CLIENT-SIDE ROUTING
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-});
+app.use(flash());
 
 // middleware for session
 app.use(session({
@@ -54,6 +45,22 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+
+// Requiring user model
+const User = require('./models/usermodel');
+
+dotenv.config({path : './config.env'});
+
+const userRoutes = require('./routes/users');
+app.use(userRoutes);
+
+//HANDLE CLIENT-SIDE ROUTING
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
+
+
 passport.use(new LocalStrategy({usernameField : 'email'}, User.authenticate()));
 /* passport는 현재 로그인한 유저에 대한 세션을 유지
 밑의 2개의 라인으로 그 세션을 유지할 수 있음
@@ -92,7 +99,6 @@ app.use((err, req, res, next) => {
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('views', path.join(__dirname, '../client/views'));
 app.use(express.static('public'));
-// app.use(userRoutes);
 
 // MONGODB CONNECTION
 mongoose.connect(process.env.MONGO_URI, {
