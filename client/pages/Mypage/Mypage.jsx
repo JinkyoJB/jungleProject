@@ -1,16 +1,16 @@
 import React from "react";
-import "./Mypage.scss";
 
 //components
-import Header from "../../components/Header/Header.jsx";
+import Header from "../../components/Header.jsx";
+import Sidebar from "../../components/Sidebar.jsx";
+import Gallery from "../../components/Gallery.jsx";
 
 function Mypage() {
     return(
         <div className="Mypage">
-            <Header>
-                
-            </Header>
-            <p></p>
+            <Header />
+            <Sidebar />
+            <Gallery />
         </div>
     )
 }

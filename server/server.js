@@ -17,6 +17,26 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 // ROUTES
 app.use('/api', require('./routes/api'));
 
+// let id = 2;
+// const todoList = [{
+//   id: 1,
+//   text: '할일 1',
+//   done: false,
+// }];
+
+// app.get('/api/todo', (req, res) => {
+//   res.json(todoList);
+// });
+
+// app.post('/api/todo', (req, res) => {
+//   const { text, done } = req.body;
+//   todoList.push({
+//     id: id++,
+//     text,
+//     done,
+//   });
+//   return res.send('success');
+// });
 
 //HANDLE CLIENT-SIDE ROUTING
 app.get('*', (req, res) => {
@@ -39,14 +59,13 @@ app.use((err, req, res, next) => {
 });
 
 
-
 // MONGODB CONNECTION
-// mongoose.connect('process,env.MONGO_URI', {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true
-// })
-//   .then(() => console.log('Connected to MongoDB'))
-//   .catch(err => console.log(err));
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.log(err));
 
 // SERVER LISTEN
 app.listen(PORT, () => {

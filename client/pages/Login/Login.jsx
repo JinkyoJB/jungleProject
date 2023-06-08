@@ -8,7 +8,6 @@ function Login() {
                 <h1>Sign in</h1>
                 <label htmlFor=""> Username</label>
             
-            
             </form> 
         </div>
     )

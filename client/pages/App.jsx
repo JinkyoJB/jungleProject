@@ -2,7 +2,7 @@ import React from 'react';
 import { Router, Route, Routes, Link } from 'react-router-dom';
 
 //components
-import Header from "../components/Header/Header.jsx"
+import Header from "../components/Header.jsx"
 
 
 //pages
