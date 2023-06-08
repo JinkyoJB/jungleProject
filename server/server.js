@@ -10,7 +10,7 @@ const dotenv = require('dotenv');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy; 
+const LocalStrategy = require('passport-local').Strategy;
 
 const PORT = 3000;
 const app = express();
@@ -22,6 +22,14 @@ app.use(cookieParser()); // Parses cookies attached to the client request object
 
 // SERVE STATIC FILES
 app.use(express.static(path.join(__dirname, '../client/dist')));
+
+// cors
+let corsOptions = {
+  origin: 'http://127.0.0.1:3033',
+  credentials : true // 요청하는 측과 응답하는 측 모두 인증 정보 처리 가능
+};
+
+app.use(cors(corsOptions));
 
 // ROUTES
 // const userRoutes = require('./routes/users');
@@ -50,7 +58,7 @@ passport.use(new LocalStrategy({usernameField : 'email'}, User.authenticate()));
 /* passport는 현재 로그인한 유저에 대한 세션을 유지
 밑의 2개의 라인으로 그 세션을 유지할 수 있음
 - 유저가 dashboard에 접근할수 있게 하려면(세션을 기반으로)
-searlize/ deserialize로 이를 가능케 함(??)
+serialize/ deserialize로 이를 가능케 함(??)
 */
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
@@ -60,7 +68,7 @@ app.use((req, res) => res.status(404).send('404 Not Found'));
 // midleware for flash messages
 app.use(flash());
 
-// setting middleware globally 
+// setting middleware globally
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash(('success_msg'));
   res.locals.error_msg = req.flash(('error_msg'));
@@ -87,7 +95,7 @@ app.use(express.static('public'));
 // app.use(userRoutes);
 
 // MONGODB CONNECTION
-mongoose.connect('process,env.MONGO_URI', {
+mongoose.connect(process.env.MONGO_URI, {
   // useNewUrlParser: true,
   useUnifiedTopology: true
 })
