@@ -1,13 +1,13 @@
 import React from "react";
 // import "./Login.scss";
-import LoginBox from "../../components/LoginBox.jsx";
+import SignupBox from "../../components/SignupBox.jsx";
 
 
-function Login() {
+function Signup() {
     return (
         <div className="login">
-            <LoginBox/>
+            <SignupBox/>
         </div>
     )
 }
-export default Login;
+export default Signup;
