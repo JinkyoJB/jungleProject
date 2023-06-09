@@ -92,18 +92,22 @@ router.get('/logout', isAuthenticatedUser ,(req, res, next) => {
  *         description: There was an error processing the reset token
  */
 router.get('/reset/:token', (req, res) => {
+  console.log(req.params.token);
   User.findOne({
     resetPasswordToken  : req.params.token,
     resetPasswordExpires : {$gt : Date.now()}
   }).then(user => {
     if (!user) {
+      console.log("hereeee");
       res.status(400).json({'message': 'Password reset token is invalid or expired'});
       return;
     }
 
-    res.sendFile('newpassword', {token : req.params.token});
+    // res.sendFile('newpassword', {token : req.params.token});
+    res.status(200).json({'user_email': user.email});
   })
     .catch(err => {
+      console.log(err.message);
       res.status(400).json({'message': 'Password reset token is invalid or expired'});
     });
 });
@@ -144,29 +148,40 @@ router.get('/reset/:token', (req, res) => {
  *         type: string
  *
  */
-router.post('/login', passport.authenticate('local', {
-  successRedirect : '/dashboard',
-  failureRedirect : '/login',
-  failureFlash : 'Invalid email or password. Try Again!'
-})
-);
+// router.post('/login', passport.authenticate('local', {
+//   successRedirect : '/Gallery',
+//   failureRedirect : '/login',
+//   failureFlash : 'Invalid email or password. Try Again!'
+// })
+// );
 
-// router.post('/login', function(req, res, next) {
-//   passport.authenticate('local', function(err, user, info) {
-//     if (err) {
-//       return res.status(500).json({ error: err.message });
-//     }
-//     if (!user) {
-//       return res.status(401).json({ error: 'Invalid email or password. Try Again!' });
-//     }
-//     req.logIn(user, function(err) {
-//       if (err) {
-//         return res.status(500).json({ error: err.message });
-//       }
-//       return res.redirect('/dashboard');
-//     });
-//   })(req, res, next);
-// });
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err); // 에러가 발생하면 에러 핸들러에 전달
+    }
+
+    if (!user) { // user가 false이면 인증 실패
+      return res.status(400).json({ 
+        message: info ? info.message : 'Login failed'
+      });
+    }
+
+    // req.login()은 Passport가 제공하는 함수로, 인증 세션을 시작합니다.
+    req.login(user, err => {
+      if (err) {
+        return next(err);
+      }
+      // 로그인 성공 시 사용자 정보를 응답에 추가하고 성공 메시지를 전송합니다.
+      return res.status(200).json({
+        message: 'Login succeeded',
+        user: user
+      });
+    });
+
+  })(req, res, next); // 이 함수에 req, res, next를 전달합니다.
+});
+
 
 
 /**
@@ -369,8 +384,11 @@ router.post('/forgot', (req, res, next) => {
         to: user.email,
         from : '1park4170@gmail.com',
         subject : 'Recovery Email from Auth Project',
+        // text : 'Please click the following link to recover your passoword: \n\n'+
+        //                 'http://'+ req.headers.host +'/reset/'+token+'\n\n'+
+        //                 'If you did not request this, please ignore this email.'
         text : 'Please click the following link to recover your passoword: \n\n'+
-                        'http://'+ req.headers.host +'/reset/'+token+'\n\n'+
+                        'http://localhost:3033/reset/'+token+'\n\n'+
                         'If you did not request this, please ignore this email.'
       };
       smtpTransport.sendMail(mailOptions, err=> {

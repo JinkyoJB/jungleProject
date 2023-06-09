@@ -5,15 +5,15 @@
 //yarn add async
 //yarn add nodemailer
 
-require('dotenv').config();
 const path = require('path');
 const express = require('express'); 
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const bcrypt = require('bcrypt')
 
 const bodyParser = require('body-parser');
-// const dotenv = require('dotenv');
+const dotenv = require('dotenv');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
@@ -21,6 +21,8 @@ const LocalStrategy = require('passport-local').Strategy;
 
 const PORT = 3000;
 const app = express();
+
+dotenv.config({path : './config.env'});
 
 /*--------------------- dohee 추가 : 클라우드 이미지 url ------------------------*/
 // 모듈 설치 : dotenv, path, express, mongoose, cookieParser
@@ -67,7 +69,6 @@ app.use(passport.session());
 // Requiring user model
 const User = require('./models/usermodel');
 
-// dotenv.config({path : './config.env'});
 
 const userRoutes = require('./routes/users');
 app.use(userRoutes);
@@ -77,8 +78,37 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
+// passport.use(new LocalStrategy({usernameField : 'email'}, User.authenticate()));
 
-passport.use(new LocalStrategy({usernameField : 'email'}, User.authenticate()));
+passport.use(new LocalStrategy({
+  usernameField: 'email',   
+  passwordField: 'password',   
+}, async (email, password, done) => {
+  try {
+    const exUser = await User.findOne({ email: email });
+    if (exUser) {
+      exUser.authenticate(password, (err, user, passwordError) => {
+        if (passwordError) {
+          // Incorrect password
+          done(null, false, {message : '비밀번호가 일치하지 않습니다'});
+        } else if (err) {
+          // Other error
+          done(err);
+        } else {
+          // Success
+          done(null, user);
+        }
+      });
+    } else {
+      done(null, false, {message : '가입되지 않은 회원입니다'})
+    }
+  } catch (error) {
+    console.error(error);
+    done(error);
+  }
+}));
+
+
 /* passport는 현재 로그인한 유저에 대한 세션을 유지
 밑의 2개의 라인으로 그 세션을 유지할 수 있음
 - 유저가 dashboard에 접근할수 있게 하려면(세션을 기반으로)
@@ -114,6 +144,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 app.set('views', path.join(__dirname, '../client/views'));
 app.use(express.static('public'));
 

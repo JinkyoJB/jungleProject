@@ -17,18 +17,15 @@ import axios from 'axios';
 const LoginBox = () => {
   const [errorMessage, setErrorMessage] = useState(null); // Error message state
   const navigate = useNavigate(); // useNavigate hook for redirecting
-  const handleResponse = async () => {
-    const response = await axios.post('http://localhost:3000/login');
-    const status = response.status;
-    // 200이면 로그인 성공 , 400이면 로그인 실패
-    if (status == 200){
+  
+  // Updated handleResponse function to accept a response object
+  const handleResponse = (response) => {
+    if (response.status === 200) {
       navigate('/Mypage');
-    }
-    if (status == 400){
-      setErrorMessage('Login failed. Please try again.');
+    } else {
+      setErrorMessage(response.data.message);
     }
   };
-
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -37,11 +34,11 @@ const LoginBox = () => {
       email: data.get('email'),
       password: data.get('password'),
     });
+    // Removed .then(handleResponse) here
     axios.post('http://localhost:3000/login', {
       email: data.get('email'),
       password: data.get('password')
-    }).then(handleResponse);
-
+    }).then(handleResponse); // Passed handleResponse function to .then
   };
 
   return (
