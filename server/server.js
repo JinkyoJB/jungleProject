@@ -146,7 +146,7 @@ app.use((err, req, res, next) => {
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.set('views', path.join(__dirname, '../client/views'));
-app.use(express.static('public'));
+// app.use(express.static('public'));
 
 // MONGODB CONNECTION
 mongoose.connect(process.env.MONGO_URI, {
