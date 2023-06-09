@@ -1,12 +1,12 @@
 import React from "react";
+// import "./Login.scss";
+import LoginBox from "../../components/LoginBox.jsx";
+
 
 function Login() {
     return (
         <div className="login">
-            <form>
-                <h1>Sign in</h1>
-            
-            </form> 
+            <LoginBox/>
         </div>
     )
 }

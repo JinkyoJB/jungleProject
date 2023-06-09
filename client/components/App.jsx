@@ -11,6 +11,12 @@ import Test from "../pages/Test.jsx"
 import Test2 from "../pages/Test2.jsx"
 import Test3 from "../pages/Test3.jsx"
 
+//hojun
+import Login from "../pages/Login/Login.jsx"
+import Forgotpw from "../pages/Login/Forgotpw.jsx"
+import Signup from "../pages/Login/SignUp.jsx"
+import PasswordChange from "../pages/Login/PasswordChange.jsx"
+
 function App() {
     return (
     <div>
@@ -20,6 +26,11 @@ function App() {
             <Route path="/test2" element={<Test2 />} />
             <Route path="/test3" element={<Test3 />} />
             <Route path="/mypage" element={<Mypage />} />
+
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgotPW" element={<Forgotpw />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/passwordchange" element={<PasswordChange />} />
         </Routes>
     </div>
 )}
